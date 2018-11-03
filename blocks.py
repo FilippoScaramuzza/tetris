@@ -10,6 +10,7 @@ class Block:
         self._cells = []
         self._x = x
         self._y = y
+        self._ismoving = True
         self.populateBlock()
 
     def populateBlock(self):
@@ -62,3 +63,7 @@ class Block:
                            [0, 0, 0, 0]]
             return
         
+def move(blocks: list):
+    for b in blocks:
+        if b._ismoving:
+            b._y += 1
