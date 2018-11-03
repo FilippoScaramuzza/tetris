@@ -18,12 +18,14 @@ COLS = 10
 sqsize = CANVASDIMX // COLS
 sqsizeOffset = 1
 spawnable = True
+selected = 0
 
 blockSprites = g2d.load_image("media/blocks.png")
 #background = (0, 38, 102)
 #lines = (0, 88, 102)
 background = (10, 10, 10)
 lines = (50, 50, 50)
+frameCounter = 0
 
 #blocks
 pixelsize = 40
@@ -43,34 +45,69 @@ blocks = [0, 1, 2, 3, 4, 5, 6]
 #                      " |_"|
 '''
 blockList = []
+board = []
 
 #functions
 
 def drawBlocks():
+
 	for b in blockList:
 		relx = b._x * sqsize
 		rely = b._y * sqsize
-		absx = relx - 2 * sqsize
-		absy = rely - 1 * sqsize
 		
 		for r in range(0, 4):
 			for c in range(0, 4):
 				if b._cells[r][c] == 1:
-					g2d.draw_image_clip(blockSprites, (absx, absy, sqsize, sqsize), (b._type * sqsize, 0, pixelsize, pixelsize))
-				absx += pixelsize
-			absy += pixelsize
-			absx = relx - 2 * sqsize
+					g2d.draw_image_clip(blockSprites, (relx, rely, sqsize, sqsize), (b._type * sqsize, 0, pixelsize, pixelsize))
+				relx += pixelsize
+			rely += pixelsize
+			relx = b._x * sqsize
+
+def updateBoard():
+	global board, spawnable
+
+	board = [[0 for i in range(COLS)] for j in range(ROWS)]
+
+	for b in blockList:
+		i, j = 0, 0
+		for r in range(b._y, b._y + 3):
+			for c in range(b._x, b._x + 4):
+				if b._cells[j][i] == 1:
+					board[r][c] = 1
+				i += 1
+			j += 1
+			i = 0
+	
+		if b._y + 4 == ROWS:
+			b._ismoving = False
+
+			if b._id == selected:
+				spawnable = True
+
+			
+	
 
 def update():
-	global spawnable
+	global spawnable, frameCounter, selected
 
-	if spawnable:
-		blockList.append(Block(randint(0, 6), randint(2, 8), -3))
-		spawnable = False
+	if frameCounter %  20 == 0:
+		if spawnable:
+			blockList.append(Block(randint(0, 6), randint(0, 6), -3))
+			selected = blockList[len(blockList) - 1]._id
+			spawnable = False
 
-	init_background()
-	move(blockList)
-	drawBlocks()
+		init_background()
+		move(blockList)
+		updateBoard()
+		drawBlocks()
+		for i in range(ROWS):
+			for j in range(COLS):
+				print(board[i][j], end=" ")
+			print("")
+		
+		print("==================")
+
+	frameCounter += 1
 
 
 def init_background():
@@ -80,8 +117,10 @@ def init_background():
             g2d.draw_rect(background, (c * sqsize + sqsizeOffset, r * sqsize + sqsizeOffset, sqsize - sqsizeOffset * 2, sqsize - sqsizeOffset * 2))
 
 def main():
+	global board
 	g2d.init_canvas((CANVASDIMX, CANVASDIMY))
 	init_background()
+
 	""" blockList.append(Block(0, 6, 5))
 	blockList.append(Block(1, 2, 16))
 	blockList.append(Block(2, 6, 8))
@@ -89,6 +128,8 @@ def main():
 	blockList.append(Block(4, 2, 11))
 	blockList.append(Block(5, 1, 1))
 	blockList.append(Block(6, 6, 13)) """
-	g2d.main_loop(update, 1000)
+
+	board = [[0 for i in range(COLS)] for j in range(ROWS)]
+	g2d.main_loop(update, 1000 // 20)
 
 main()

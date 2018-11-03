@@ -3,9 +3,11 @@ Blocks
 '''
 
 from random import randint
+from uuid import uuid4
 
 class Block:
     def __init__(self, type: int, x: int, y: int):
+        self._id = uuid4()
         self._type = type #it's the color too
         self._cells = []
         self._x = x
