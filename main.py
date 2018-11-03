@@ -12,7 +12,7 @@ from blocks import Block, move
 from random import randint
 
 #variables and costants
-CANVASDIMX, CANVASDIMY = 400, 800
+CANVASDIMX, CANVASDIMY = 200, 400
 ROWS = 20
 COLS = 10
 sqsize = CANVASDIMX // COLS
@@ -28,7 +28,7 @@ lines = (50, 50, 50)
 frameCounter = 0
 
 #blocks
-pixelsize = 40
+pixelsize = sqsize
 
 ''''
 blocks = [0, 1, 2, 3, 4, 5, 6]
@@ -69,23 +69,22 @@ def updateBoard():
 	board = [[0 for i in range(COLS)] for j in range(ROWS)]
 
 	for b in blockList:
-		i, j = 0, 0
-		for r in range(b._y, b._y + 3):
-			for c in range(b._x, b._x + 4):
-				if b._cells[j][i] == 1:
-					board[r][c] = 1
-				i += 1
+		for r in range(ROWS):
+			for c in range(COLS):
+				if b._y in range(r - 3, r + 1) and b._x in range(c - 3, c + 1):
+					if b._cells[r - b._y][c - b._x] == 1:
+						print(b._cells)
+						board[r][c] = 1
+				""" i += 1
 			j += 1
-			i = 0
-	
-		if b._y + 4 == ROWS:
+			i = 0 """
+
+		
+		if b._y + 3 == ROWS:
 			b._ismoving = False
 
 			if b._id == selected:
 				spawnable = True
-
-			
-	
 
 def update():
 	global spawnable, frameCounter, selected
