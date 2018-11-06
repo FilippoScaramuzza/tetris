@@ -79,23 +79,37 @@ def updateBoard():
 			j += 1
 			i = 0 """
 
-		
-		if b._y + 3 == ROWS:
-			b._ismoving = False
+		checkStop()
 
-			if b._id == selected:
-				spawnable = True
+def checkStop():
+	global spawnable
+	
+	for b in blockList:
+		for i in range(4):
+			for _j in range(4):
+				if b._cells[i].count(1) == 0:
+					print(b._cells[i])
+					if b._y + 3 == ROWS - 1:
+						b._ismoving = False
+						if b._id == selected:
+							spawnable = True
+				else:
+					if b._y + 3 == ROWS:
+						b._ismoving = False
+						if b._id == selected:
+							spawnable = True
 
 def update():
 	global spawnable, frameCounter, selected
 
-	if frameCounter %  20 == 0:
+	if frameCounter %  5 == 0:
 		if spawnable:
 			blockList.append(Block(randint(0, 6), randint(0, 6), -3))
 			selected = blockList[len(blockList) - 1]._id
 			spawnable = False
 
 		init_background()
+		checkStop()
 		move(blockList)
 		updateBoard()
 		drawBlocks()
